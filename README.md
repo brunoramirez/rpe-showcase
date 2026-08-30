@@ -42,7 +42,13 @@ Because training facilities often lack cellular reception, a cloud-dependent app
 ## 🧠 System Topologies
 
 ### Client-Cloud Topology
-The application strictly isolates the UI from business logic to maintain 60 FPS performance, even with heavy glassmorphic rendering (`BackdropFilter`).
+
+The architecture relies on a highly decoupled **Feature-First (Clean Architecture)** structure to ensure the mobile client remains lightweight, testable, and capable of maintaining a locked 60 FPS—even when rendering computationally expensive UI elements like glassmorphic `BackdropFilters`.
+
+*   **View Layer (UI):** Built entirely with stateless or simplistic stateful widgets. Absolutely zero hardcoding is permitted; all UI components inherit from a centralized, localized Design System (`AppTheme`, `AppSpacing`, `AppColors`).
+*   **State Management (Riverpod):** The true engine of the app. Business logic, Firebase streams, and caching mechanisms are wrapped in reactive `Providers` and `Notifiers`. The UI simply watches (`ref.watch`) these granular state nodes, guaranteeing that only the specific widgets whose data has changed are rebuilt.
+*   **Routing & Guards (GoRouter):** Navigation is state-driven. Strict route guards intercept navigation events based on Riverpod authentication states, automatically redirecting users to the appropriate role-based dashboards (Coach vs. Athlete) without UI flickering.
+*   **Web Dashboard (Next.js):** The web presence (`therpeapp.com`) acts as the marketing and portfolio gateway, utilizing React 19 and Tailwind CSS. It leverages Framer Motion to deliver premium, hardware-accelerated fluid animations that mirror the mobile app's "glassy" aesthetic.
 
 ```mermaid
 flowchart LR
@@ -64,8 +70,13 @@ flowchart LR
     Repos <--> Auth
 ```
 
-### Relational Data Model (NoSQL)
-RPE utilizes a highly flattened NoSQL structure to ensure blazing fast reads and simple offline synchronization.
+### Data Model & Backend Infrastructure
+
+Instead of relying on a traditional relational database, RPE is built on a **Serverless Firebase Infrastructure** utilizing Cloud Firestore. This decision was driven by the strict requirement for **Offline Persistence** in unpredictable sports environments (e.g., poor reception on pitches or in locker rooms).
+
+*   **Offline-First Synchronization:** The repository layer is configured to cache all Firestore reads and queue all writes locally by default. When an athlete submits an RPE log without a cellular connection, the app immediately resolves the state optimistically and syncs the payload to the cloud the moment connectivity is restored.
+*   **Flattened NoSQL Schema:** To optimize read speeds and reduce document size, the database avoids deep nesting. High-volume data (like `RPE_LOGS`) is kept in root-level collections and linked to `USERS` and `TEAMS` via foreign keys (`uid`, `teamId`). This allows coaches to query thousands of session logs across a roster without pulling unnecessary user metadata.
+*   **On-Device Aggregation:** Rather than relying on expensive Cloud Functions for every metric, initial sports science calculations (Acute Load, Chronic Load, ACWR) are processed directly on the edge using efficient Riverpod selectors parsing the locally cached `RPE_LOGS`.
 
 ```mermaid
 erDiagram
