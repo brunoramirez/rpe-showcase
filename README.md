@@ -1,163 +1,102 @@
 <div align="center">
-  <img src="images/logo.png" alt="RPE App Logo" width="150"/>
-  <h1>RPE App Showcase</h1>
-  <p><strong>A frictionless load management & sports science platform for teams.</strong></p>
+  <img src="images/logo_gradient.png" alt="RPE Logo" height="120" />
 </div>
 
-> **Note:** This is a showcase repository. The source code for the RPE App is proprietary and closed source. This repository provides a high-level overview of the architecture, technologies, and technical challenges solved during development.
+# RPE: The Athlete-First Load Management Platform
 
-## 💡 The RPE App Vision & Mechanics
+> *Note: This is a public showcase repository. The source code is proprietary. The documentation below highlights the system architecture, design philosophy, and technical implementation.*
 
-### The Origin Story
-The idea for the RPE app was born out of frustration. Unai Cerezo (a CAFYD student at UFV and football player) and Bruno Ramirez (studying Industrial Technologies Engineering and Engineering Physics at UC3M, and basketball player) constantly experienced the chaotic, broken methods of load management in non-elite sports. 
+## ⚡ The Philosophy: Zero-Friction Compliance
 
-Teams were relying on clunky Google Forms, WhatsApp messages, or Excel spreadsheets to collect player data. Athletes would get tired of the friction, compliance would plummet, and coaches were left manually aggregating data instead of analyzing it—ultimately leading to a lack of actionable alerts when a player entered an injury "danger zone."
+In non-elite sports, the biggest hurdle to load management isn't the math—it's **player burnout**. When athletes are forced to use chaotic Google Forms or clunky spreadsheets, compliance inevitably drops. 
 
-### The Magic of "sRPE"
-The app revolves around the **Session RPE (sRPE) metric**, a scientifically backed load management calculation:
-`sRPE = RPE (Rate of Perceived Exertion, 0-10) x Session Duration (minutes)`
-
-### Frictionless UX
-Our guiding principle was **Radical Simplicity**. We wanted to completely eliminate friction for the athlete while providing sports-science-grade analytics for the coach. An athlete's workflow to log a session takes **less than 10 seconds** using a visual slider, large touch targets, and haptic feedback.
+**RPE was built to solve this.** Conceived by Unai Cerezo (CAFYD) and Bruno Ramirez (Engineering/Physics) out of their own frustrations in football and basketball, RPE operates on a single core principle: **The 10-Second Rule**. By replacing text inputs with haptic-enabled sliders and large touch targets, athletes can log their Session RPE (`RPE x Duration`) instantly, giving coaches the data they need to prevent injuries without the overhead.
 
 ---
 
-## 📸 Sneak Peek
+## 📱 Platform Showcase
 
-<div align="center">
-  <img src="images/Landing_page.png" alt="Landing Page" width="250"/>
-  &nbsp;&nbsp;
-  <img src="images/Athlete_dashboard.png" alt="Athlete Dashboard" width="250"/>
-  &nbsp;&nbsp;
-  <img src="images/Team_dashboard.png" alt="Team Dashboard" width="250"/>
-</div>
+| The Landing Experience | Athlete Workspace | Coach & Team Analytics |
+| :---: | :---: | :---: |
+| <img src="images/Landing_page.png" width="220" /> | <img src="images/Athlete_dashboard.png" width="220" /> | <img src="images/Team_dashboard.png" width="220" /> |
+| *Clean, compelling entry point for users.* | *Frictionless data entry and wellness tracking.* | *Actionable insights and load distribution.* |
 
 ---
 
-## 🛠 Tech Stack
+## 🛠️ Architecture & Engineering
 
-The RPE App leverages a robust and scalable technology stack spanning mobile and web ecosystems:
+### The Stack
+The RPE platform is a unified ecosystem seamlessly connecting mobile clients to a robust web presence.
 
-### Mobile Application
-- **Framework:** Flutter
-- **Language:** Dart
-- **State Management:** Riverpod (`flutter_riverpod`) for responsive, scalable state orchestration.
-- **Routing:** GoRouter (`go_router`) with strict role-based (Coach vs. Athlete) and auth-based guards.
-- **Architecture:** Feature-First (Clean Architecture) for modularity and scalability.
-- **Localization:** `AppLocalizations` (l10n) for day-one English and Spanish support.
+- **Mobile App:** Built with **Flutter** & **Dart**. State management is handled entirely by **Riverpod**, enforcing a strict separation of concerns (Clean Architecture).
+- **Web Portfolio:** [therpeapp.com](https://therpeapp.com) is powered by **Next.js**, **React 19**, and **Tailwind CSS**, featuring liquid animations via **Framer Motion**.
+- **Cloud Infrastructure:** **Firebase** provides Serverless Auth (Google Sign-In) and a NoSQL Database (Cloud Firestore).
 
-### Web Dashboard / Portfolio
-- **Link:** [therpeapp.com](https://therpeapp.com)
-- **Framework:** Next.js (React)
-- **Styling:** Tailwind CSS
-- **Animations:** Framer Motion
-
-### Backend & Cloud Services (Serverless)
-- **Authentication:** Firebase Auth (Seamless 1-tap Google Sign-In)
-- **Database:** Cloud Firestore (with Offline Persistence explicitly enabled)
+### Engineering Highlight: "Sports Science on the Edge"
+Because training facilities often lack cellular reception, a cloud-dependent app is a point of failure. RPE is engineered for the edge:
+1. **Offline Persistence:** Firestore is heavily optimized to cache writes locally. Athletes can log data deep inside a locker room, and the app seamlessly syncs when the connection is restored.
+2. **On-Device Computation:** To minimize cloud costs and reduce latency, complex load management algorithms (like Acute:Chronic Workload Ratios) are initially computed on the device using Riverpod selectors.
 
 ---
 
-## 🏗 High-Level System Architecture
+## 🧠 System Topologies
 
-The mobile application strictly separates business logic from the UI using Riverpod, keeping the widget tree clean and performant.
+### Client-Cloud Topology
+The application strictly isolates the UI from business logic to maintain 60 FPS performance, even with heavy glassmorphic rendering (`BackdropFilter`).
 
 ```mermaid
-graph TD
-    %% Mobile Clients
-    subgraph MobileClient [Flutter Mobile App]
-        UI[UI Layer / Views]
-        State[State Management / Riverpod]
-        Repos[Repositories / Firebase Services]
-        
-        UI <--> State
-        State <--> Repos
+flowchart LR
+    subgraph Mobile [Flutter Client]
+        UI(View Layer) --> State(Riverpod Notifiers)
+        State --> Repos(Repositories)
+    end
+    
+    subgraph Web [Next.js Web]
+        React(Pages & Components)
+    end
+    
+    subgraph Cloud [Firebase]
+        Auth(Auth)
+        DB[(Firestore)]
     end
 
-    %% Web Client
-    subgraph WebClient [Next.js Web / Portfolio]
-        Pages[Web Pages]
-        Components[UI Components]
-    end
-
-    %% Firebase Cloud Infrastructure
-    subgraph FirebaseCloud [Firebase Cloud]
-        Auth[Firebase Authentication]
-        Firestore[(Cloud Firestore NoSQL)]
-    end
-
-    %% Connections
-    Repos -->|SDK| Firestore
-    Repos -->|Auth SDK| Auth
-
-    %% Styling
-    classDef client fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000
-    classDef cloud fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
-    class MobileClient,WebClient client
-    class FirebaseCloud cloud
+    Repos <-->|Offline-First| DB
+    Repos <--> Auth
 ```
 
----
-
-## 🗄️ Database Schema (Firestore NoSQL)
-
-We use a flat NoSQL structure in Cloud Firestore, optimized for quick reads and offline synchronization.
+### Relational Data Model (NoSQL)
+RPE utilizes a highly flattened NoSQL structure to ensure blazing fast reads and simple offline synchronization.
 
 ```mermaid
 erDiagram
+    USERS ||--o{ RPE_LOGS : "logs"
+    TEAMS ||--o{ USERS : "contains"
+    TEAMS ||--o{ SESSIONS : "schedules"
+    TEAMS ||--o{ RPE_LOGS : "aggregates"
+
     USERS {
-        string uid PK "Document ID"
-        string email
-        string displayName
-        string role "coach or athlete"
+        string uid PK
+        string role "Coach/Athlete"
         string currentTeamId
     }
     TEAMS {
-        string teamId PK "Document ID"
-        string name
-        string sport
-        string coachId FK "ref to users"
-        string inviteCode
+        string teamId PK
+        string coachId FK
     }
     SESSIONS {
-        string sessionId PK "Document ID"
-        string teamId FK
+        string sessionId PK
         timestamp date
-        string type "Match, Training, Gym"
+        string type
     }
     RPE_LOGS {
-        string logId PK "Document ID"
+        string logId PK
         string athleteId FK
-        string teamId FK
-        timestamp date
-        int rpeScore "0-10"
+        int rpeScore
         int durationMinutes
         int totalLoad "rpeScore * durationMinutes"
     }
-    
-    USERS ||--o{ RPE_LOGS : logs
-    TEAMS ||--o{ USERS : has
-    TEAMS ||--o{ SESSIONS : schedules
-    TEAMS ||--o{ RPE_LOGS : tracks
 ```
 
 ---
 
-## 🚀 Technical Challenges Solved
-
-### 1. Frictionless UX: Eliminating the "Burden" of RPE Logging
-**Challenge:** The number one reason load management systems fail in non-elite sports is player burnout. If an athlete perceives data logging as a "burden" or chore, compliance drops drastically after a few weeks.
-**Solution:** We engineered the UI around the "10-Second Rule". We bypassed cumbersome text inputs and dropdowns in favor of fluid visual sliders, large interactive touch targets, and satisfying haptic feedback. The entire workflow—from receiving the post-session push notification to submitting the data—is streamlined to feel rewarding rather than taxing. 
-
-### 2. High-Performance "Glassy" UI with Zero Hardcoding
-**Challenge:** Implementing premium glassmorphic aesthetics (`BackdropFilter`, frosted navbars, and slight borders) often leads to frame drops and layout thrashing if not handled correctly.
-**Solution:** We strictly adhered to a centralized Design System (`AppSpacing`, `AppColors`, `AppTypography`). Absolutely zero UI properties are hardcoded. By heavily utilizing Riverpod to decouple business logic from the view layer, we minimized unnecessary widget rebuilds. Complex glass UI components only rebuild when their precise state changes, ensuring a locked 60fps experience.
-
-### 3. Sports Science on the Edge (Offline Persistence)
-**Challenge:** Training facilities and pitches frequently have poor cellular reception. A load management app is useless if an athlete can't submit their RPE immediately after the session. Additionally, running complex ACWR (Acute:Chronic Workload Ratio) aggregations in the cloud is expensive.
-**Solution:** We architected the app with Cloud Firestore's **Offline Persistence** enabled by default. Athletes can seamlessly log sessions without a connection; the app automatically syncs when they regain reception. Furthermore, to keep cloud costs low and speed high, complex metrics (ACWR, Monotony, Strain) are initially calculated directly on the device using efficient Riverpod selectors.
-
----
-<div align="center">
-  <i>Built with passion by Unai Cerezo & Bruno Ramirez</i>
-</div>
+*Designed and engineered by Unai Cerezo & Bruno Ramirez.*
