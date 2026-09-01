@@ -2,15 +2,17 @@
   <img src="images/logo_gradient.png" alt="RPE Logo" height="120" />
 </div>
 
-# RPE: The Athlete-First Load Management Platform
+# RPE: Track Your RPE. Prevent Injuries.
 
-> *Note: This is a public showcase repository. The source code is proprietary. The documentation below highlights the system architecture, design philosophy, and technical implementation.*
+> **Track training load in under 10 seconds.** The frictionless athletic workload telemetry platform for athletes and coaches, tracking Session RPE and Acute:Chronic Workload Ratios (ACWR) in real time.
 
-## ⚡ The Philosophy: Zero-Friction Compliance
+> *Note: This is a public showcase repository. The source code is proprietary. The documentation below highlights the system architecture, mathematical workload modeling, and technical implementation.*
 
-In non-elite sports, the biggest hurdle to load management isn't the math—it's **player burnout**. When athletes are forced to use chaotic Google Forms or clunky spreadsheets, compliance inevitably drops. 
+## ⚡ The Philosophy: Zero-Friction Telemetry & The 10-Second Rule
 
-**RPE was built to solve this.** Conceived by Unai Cerezo (CAFYD) and Bruno Ramirez (Engineering/Physics) out of their own frustrations in football and basketball, RPE operates on a single core principle: **The 10-Second Rule**. By replacing text inputs with haptic-enabled sliders and large touch targets, athletes can log their Session RPE (`RPE x Duration`) instantly, giving coaches the data they need to prevent injuries without the overhead.
+In collegiate and competitive sports, the biggest obstacle to effective workload management is **athlete data friction**. When athletes are forced to fill out complex forms or spreadsheets, compliance inevitably collapses (>60% drop-off). 
+
+**RPE was built to solve this.** Conceived by Unai Cerezo (Sports Science / CAFYD) and Bruno Ramirez (Engineering & Physics), RPE operates on a single core principle: **The 10-Second Rule**. By replacing text inputs with haptic-enabled sliders and large touch targets, athletes can log their Session RPE ($sRPE = RPE \times \text{Duration}$) in seconds—empowering coaches to optimize periodization, track acute-to-chronic workload ratios, and prevent injuries without administrative overhead.
 
 ---
 
